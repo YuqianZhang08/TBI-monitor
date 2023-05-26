@@ -9,12 +9,23 @@ import numpy as np
 
 
 
-def multivariate_fit(y,X):
+def multivariate_fit(y,X,light):
     model = sm.GLM(y,X)    
-    R=[[1, 1, 0, 0,0,0],[0, 0, 1, 1,0,0],[0, 0, 0,0,1,1]]
-    q=[1,1,1]           
-    result = model.fit_constrained((R, q))
-    concen=result.params
+    if light==405:
+        R=[[1, 1, 0, 0,0,0],[0, 0, 1, 1,0,0],[0, 0, 0,0,1,1]]
+        q=[1,1,1]           
+        result = model.fit_constrained((R, q))
+        concen=result.params
+    if light==450:
+        R=[[1, 1, 0, 0],[0, 0, 1, 1]]
+        q=[1,1]           
+        result = model.fit_constrained((R, q))
+        concen=result.params
+    if light==540:
+        R=[[1, 1]]
+        q=[1]           
+        result = model.fit_constrained((R, q))
+        concen=result.params
     return(concen)
 
 def ridgefit(X,y):
@@ -101,20 +112,20 @@ def MVRpredict(signal,light):
     signal=np.array(signal)
     baselineCrrSig=np.transpose(airPLS(signal))
     if light==405:
-        concen=multivariate_fit(baselineCrrSig,datastandard[:,0:6])
+        concen=multivariate_fit(baselineCrrSig,datastandard[:,0:6],405)
         Do=0.8*concen[2]+8*concen[3]
         Glu=concen[4]*1+concen[5]*6
         pH=6*concen[0]+8*concen[1]
         return pH,Do, Glu
     elif light==450:
         '''add code to control the lasers through TTL and GPIO'''
-        concen=multivariate_fit(baselineCrrSig,datastandard[:,6:10])
+        concen=multivariate_fit(baselineCrrSig,datastandard[:,6:10],450)
         temp=36*concen[2]+40*concen[3]
-        sodium=concen[4]*40+concen[5]*200
+        sodium=concen[0]*40+concen[1]*200
         return temp, sodium
     elif light==540:
         '''add code to control the lasers through TTL and GPIO'''
-        concen=multivariate_fit(baselineCrrSig,datastandard[:,10:12])
+        concen=multivariate_fit(baselineCrrSig,datastandard[:,10:12],540)
         calcium=concen[0]*0.5+concen[1]*2
         return calcium
         

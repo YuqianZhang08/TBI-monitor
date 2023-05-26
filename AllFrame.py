@@ -15,7 +15,7 @@ from smooth import smooth
 #import seabreeze  # talking to the spectroscopy
 from seabreeze.spectrometers import list_devices, Spectrometer
 import serial
-
+from MVR import MVRpredict
 import time
 
 pin405 = 33  # BOARD pin 
@@ -263,12 +263,12 @@ class All_Frame(tk.Frame):
                 self.ser.write(b'L2D')
                 data=(np.array(spec405).reshape(size),np.array(spec450).reshape(size),np.array(spec540).reshape(size))
                 prediction_sign=predictdata("cpu",data,"CNN")
-                curpH=prediction_sign[0][0]
-                curdo=prediction_sign[0][1]
-                curtem=prediction_sign[0][3]
-                curna=prediction_sign[0][4]
-                curca=prediction_sign[0][2]
-                curglu=prediction_sign[0][5]
+                curpH=prediction_sign[0][0]  #MVRpredict(spec405,405)[0]
+                curdo=prediction_sign[0][1]   #MVRpredict(spec405,405)[1]
+                curtem=prediction_sign[0][3]  #MVRpredict(spec450,450)[0]
+                curna=prediction_sign[0][4]   #MVRpredict(spec450,450)[1]
+                curca=prediction_sign[0][2]   #MVRpredict(spec540,540)[0]
+                curglu=prediction_sign[0][5]  #MVRpredict(spec405,405)[2]
                 
             self.bioquepH.append(curpH)
             self.bioqueDO.append(curdo)

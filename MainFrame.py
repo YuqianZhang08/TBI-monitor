@@ -129,7 +129,7 @@ class MainWindow(tk.Frame):
         self.bioselect = tk.StringVar()  
         self.plotstyle = tk.StringVar()
 
-        # set initial
+        # set initial  
         self.paused = False
         self.device.set('0')
         self.integTime.set(100000.0)
@@ -149,10 +149,10 @@ class MainWindow(tk.Frame):
         self.subbio=self.biofig.add_subplot(111)
         #self.outfile = f"{self.chem.get()}_{self.conc.get()}.csv"
         if not READ_from_DEVICE:
-            self.file="spectrums.csv"
+            self.file="spectrum.csv"
             df=pd.read_csv(self.file)
             data=np.array(df)
-            self.spectrum=data[:,5]
+            self.spectrum=smooth(data[190:190+1016,1],21)
         else:
             self.ser = serial.Serial('COM4', 115200)
             devices=list_devices()
@@ -369,7 +369,7 @@ class MainWindow(tk.Frame):
             self.canvasspec.draw()
            
         if (self.con == True):	
-            if ( READ_from_DEVICE):
+            if ( not READ_from_DEVICE):
                 curpH=random.random()
                 curdo=random.random()
                 curtem=random.random()
@@ -378,6 +378,7 @@ class MainWindow(tk.Frame):
                 curglu=random.random()
                 if (self.bioselect.get()=="pH"):
                     self.bioqueue.append(curpH)
+                    #self.bioqueue.append(MVRpredict(self.spectrum,450)[1])
                 elif (self.bioselect.get()=="DO"):
                     self.bioqueue.append(curdo)
                 elif (self.bioselect.get()=="Temp"):
@@ -388,7 +389,7 @@ class MainWindow(tk.Frame):
                     self.bioqueue.append(curca)
                 elif (self.bioselect.get()=="Glu"):
                     self.bioqueue.append(curglu)
-            if (not READ_from_DEVICE):
+            if (READ_from_DEVICE):
                 
                 '''
                 prediction_sign=predictdata(self.device,self.spectrum,"CNN")
