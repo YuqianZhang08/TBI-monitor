@@ -131,7 +131,7 @@ class MainWindow(tk.Frame):
 
         # set initial  
         self.paused = False
-        self.device.set('0')
+        self.device.set('FLAME-VIS-NIR')
         self.integTime.set(100000.0)
         self.smoothinx.set(1)
         self.sampleinx.set(10)
@@ -142,9 +142,9 @@ class MainWindow(tk.Frame):
         self.con=False
         self.specCon=False
         self.plotstyle.set('seaborn-colorblind')
-        self.specfig= plt.Figure(figsize=(4.5, 2.5), dpi=100)
-        self.specsub=self.specfig.add_subplot(111)
-        self.biofig= plt.Figure(figsize=(7.5, 4), dpi=100)
+        #self.specfig= plt.Figure(figsize=(4.5, 2.5), dpi=100)
+        #self.specsub=self.specfig.add_subplot(111)
+        self.biofig= plt.Figure(figsize=(7, 3.5), dpi=100)
         #plt.subplots_adjust(left=0.10, bottom=0.12, right=0.97, top=0.95)
         self.subbio=self.biofig.add_subplot(111)
         #self.outfile = f"{self.chem.get()}_{self.conc.get()}.csv"
@@ -169,8 +169,8 @@ class MainWindow(tk.Frame):
         self.tstfrm = tk.Frame(self.parent)
         self.entfrm = tk.LabelFrame(self.tstfrm, text="Default Settings")
         # this spacing is to avoid using multiple labels
-        self.outfrm = tk.LabelFrame(self.tstfrm,
-            text="Current spectrum")
+        #self.outfrm = tk.LabelFrame(self.tstfrm,
+            #text="Current spectrum")
         self.cmdfrm = tk.LabelFrame(self.tstfrm, text="Plot Controls")
 
         # define the self.entfrm entries
@@ -178,25 +178,25 @@ class MainWindow(tk.Frame):
             master=self.entfrm,
             width=14,
             textvariable=self.device,
-            justify=tk.CENTER
+            justify=tk.LEFT
             )
         self.p2 = ttk.Entry(
             master=self.entfrm,
             width=14,
             textvariable=self.integTime,
-            justify=tk.CENTER
+            justify=tk.LEFT
             )
         self.smoothdegree= ttk.Entry(
             master=self.entfrm,
             width=14,
             textvariable=self.smoothinx,
-            justify=tk.CENTER
+            justify=tk.LEFT
             )
         self.sampleFreq= ttk.Entry(
             master=self.entfrm,
             width=14,
             textvariable=self.sampleinx,
-            justify=tk.CENTER
+            justify=tk.LEFT
             )
         self.strtbtn = ttk.Button(
             master=self.entfrm,
@@ -208,50 +208,57 @@ class MainWindow(tk.Frame):
             text="Stop",
             command=lambda: self.spec_stop()
             )
+        self.defaultbtn = ttk.Button(
+            master=self.entfrm,
+            text="Use default value",
+            command=lambda: self.setdefault()
+            )
+        '''
         self.calibrationbtn = ttk.Button(
             master=self.entfrm,
             text="Calibration",
             command=lambda:self.calibration_test()
             )
-
+        '''
         # grid entry labels into self.entfrm
         ttk.Label(
             master=self.entfrm,
             text="Device:"
-            ).grid(row=0, sticky=tk.E)
+            ).grid(row=0, sticky=tk.W)
         ttk.Label(
             master=self.entfrm,
             text="Integration time (s):"
-            ).grid(row=1, sticky=tk.E)
+            ).grid(row=1, sticky=tk.W)
         ttk.Label(
             master=self.entfrm,
             text="Smooth correction:"
-            ).grid(row=2, sticky=tk.E)
+            ).grid(row=2, sticky=tk.W)
         ttk.Label(
             master=self.entfrm,
             text="Sample frequency:"
-            ).grid(row=3, sticky=tk.E)
+            ).grid(row=3, sticky=tk.W)
 
         # grid entries into self.entfrm
-        self.p1.grid(row=0, column=1, sticky=tk.E, padx=1)
-        self.p2.grid(row=1, column=1, sticky=tk.E, pady=1)
-        self.smoothdegree.grid(row=2, column=1, sticky=tk.E, pady=1)
-        self.sampleFreq.grid(row=3, column=1, sticky=tk.E, pady=1)
-        self.strtbtn.grid(row=5, column=2, columnspan=1, pady=1)
-        self.stopbtn.grid(row=5, column=3, columnspan=1, pady=1)
-        self.calibrationbtn.grid(row=5, column=1, sticky=tk.W, pady=1)
+        self.p1.grid(row=0, column=1, sticky=tk.W, padx=1)
+        self.p2.grid(row=1, column=1, sticky=tk.W, pady=1)
+        self.smoothdegree.grid(row=2, column=1, sticky=tk.W, pady=1)
+        self.sampleFreq.grid(row=3, column=1, sticky=tk.W, pady=1)
+        self.strtbtn.grid(row=6, column=0, columnspan=1, sticky=tk.W,pady=1)
+        self.stopbtn.grid(row=6, column=1, columnspan=1, sticky=tk.W,pady=1)
+        self.defaultbtn.grid(row=5, column=1, columnspan=1, sticky=tk.W,pady=10)
+        #self.calibrationbtn.grid(row=5, column=0, columnspan=1, pady=1)
         cols = self.entfrm.grid_size()
         for col in range(cols[0]):
             self.entfrm.grid_columnconfigure(col, weight=1)
 
         # build self.outfrm PACK
-        self.plotspec=self.specsub.plot([],[])[0]
+        #self.plotspec=self.specsub.plot([],[])[0]
         
         # TODO: explicitly clarify some of these args
-        self.canvasspec = FigureCanvasTkAgg(self.specfig, master=self.outfrm)
-        toolbar = NavigationToolbar2Tk(self.canvasspec, self.outfrm)
-        toolbar.update()
-        self.canvasspec.get_tk_widget().pack()
+        #self.canvasspec = FigureCanvasTkAgg(self.specfig, master=self.outfrm)
+        #toolbar = NavigationToolbar2Tk(self.canvasspec, self.outfrm)
+        #toolbar.update()
+        #self.canvasspec.get_tk_widget().pack()
         #self.canvasspec.draw()
         self.after(25,self.plot_fig)
         # build self.cmdfrm 4x3 GRID
@@ -267,8 +274,8 @@ class MainWindow(tk.Frame):
             command=lambda: self.end_test(),
             width=15
             )
-        self.runbtn.grid(row=0, column=2, padx=5, pady=2, sticky=tk.E)
-        self.endbtn.grid(row=0, column=3, padx=5, pady=2, sticky=tk.E)
+        self.runbtn.grid(row=4, column=0, padx=5, pady=2, sticky=tk.W)
+        self.endbtn.grid(row=4, column=1, padx=5, pady=2, sticky=tk.W)
         tk.Label(
             master=self.cmdfrm,
             text="Select data to plot:"
@@ -279,37 +286,37 @@ class MainWindow(tk.Frame):
             text="pH",
             variable=self.bioselect,
             value='pH'
-            ).grid(row=1, column=0, padx=5)
+            ).grid(row=1, column=0, padx=5,sticky=tk.W)
         tk.Radiobutton(
             master=self.cmdfrm,
             text="Dissolved Oxygen",
             variable=self.bioselect,
             value='DO'
-            ).grid(row=1, column=1, padx=5)
+            ).grid(row=1, column=1, padx=5,sticky=tk.W)
         tk.Radiobutton(
             master=self.cmdfrm,
             text="Temperature",
             variable=self.bioselect,
             value='Temp'
-            ).grid(row=1, column=2, padx=5)
+            ).grid(row=2, column=0, padx=5,sticky=tk.W)
         tk.Radiobutton(
             master=self.cmdfrm,
             text="Sodium ion",
             variable=self.bioselect,
             value='Na'
-            ).grid(row=2, column=0, padx=5)
+            ).grid(row=2, column=1, padx=5,sticky=tk.W)
         tk.Radiobutton(
             master=self.cmdfrm,
             text="Calcium ion",
             variable=self.bioselect,
             value='Ca'
-            ).grid(row=2, column=1, padx=5)
+            ).grid(row=3, column=0, padx=5,sticky=tk.W)
         tk.Radiobutton(
             master=self.cmdfrm,
             text="Glucose",
             variable=self.bioselect,
             value='Glu'
-            ).grid(row=2, column=2, padx=5)
+            ).grid(row=3, column=1, padx=5,sticky=tk.W)
         
 
         # disable the controls to prevent starting test w/o parameters
@@ -332,32 +339,37 @@ class MainWindow(tk.Frame):
         #self.canvasbio.show()
         with plt.style.context(self.plotstyle.get()):
             self.pltfrm.config(text=("Biomarker concentration"))
-            self.outfrm.config(text=("Spectrum"))
+            #self.outfrm.config(text=("Spectrum"))
             self.subbio.set_ylabel("Concentration") 
             self.subbio.set_xlabel("Time")
             self.subbio.set_xlim(0,100)
             self.subbio.set_ylim(0,10)
             self.subbio.xaxis.set_visible(False)
-            self.specsub.set_ylabel("Intensity") 
-            self.specsub.set_xlabel("wavelength (nm)")
-            self.specsub.set_ylim(1400,3000)
-            self.specsub.set_xlim(400,800)
+            #self.specsub.set_ylabel("Intensity") 
+            #self.specsub.set_xlabel("wavelength (nm)")
+            #self.specsub.set_ylim(1400,3000)
+            #self.specsub.set_xlim(400,800)
         
         # grid stuff into self.tstfrm
-        self.entfrm.grid(row=0, column=0, sticky=tk.NSEW, pady=2)
+        self.entfrm.grid(row=0, column=0, sticky=tk.NSEW, pady=1)
         self.pltfrm.grid(row=0, column=1, rowspan=2, sticky=tk.NSEW, padx=2)
-        self.outfrm.grid(row=1, column=0, sticky=tk.NSEW, pady=1) 
-        self.cmdfrm.grid(row=2, column=0, sticky=tk.NSEW, pady=2)
+        #self.outfrm.grid(row=1, column=0, sticky=tk.NSEW, pady=1) 
+        self.cmdfrm.grid(row=1, column=0, pady=1)
         self.tstfrm.grid(padx=3)
 
     def getSpectra(self):
-        
         wavelengths, intensities = self.spec.spectrum(correct_dark_counts=False, correct_nonlinearity=True)
         self.spectrum=smooth(intensities,21)
         self.wavelength=wavelengths
         
-    def plot_fig(self):   
+    def setdefault(self):
+        self.device.set('0')
+        self.integTime.set(100000.0)
+        self.smoothinx.set(1)
+        self.sampleinx.set(10)
         
+    def plot_fig(self):   
+        '''
         if (self.specCon==True):
             self.getSpectra()
             self.plotspec.set_xdata(self.wavelength)
@@ -367,7 +379,7 @@ class MainWindow(tk.Frame):
             self.plotspec.set_ydata(self.spectrum)
             self.plotspec.set_xdata(np.arange(0,len((self.spectrum))))
             self.canvasspec.draw()
-           
+        '''   
         if (self.con == True):	
             if ( not READ_from_DEVICE):
                 curpH=random.random()
@@ -377,7 +389,7 @@ class MainWindow(tk.Frame):
                 curca=random.random()
                 curglu=random.random()
                 if (self.bioselect.get()=="pH"):
-                    self.bioqueue.append(curpH)
+                    self.bioqueue.append(7+curpH)
                     #self.bioqueue.append(MVRpredict(self.spectrum,450)[1])
                 elif (self.bioselect.get()=="DO"):
                     self.bioqueue.append(curdo)
@@ -456,7 +468,9 @@ class MainWindow(tk.Frame):
         print ("run test")
     def end_test(self):
         self.con=False
-        print ("endtest")        
+        print ("endtest")    
+    
+    '''  
     def calibration_test(self):
         self.spec.close()
         self.ser.close()
@@ -473,7 +487,7 @@ class MainWindow(tk.Frame):
         frame.grid(row=0, column=0, sticky="nsew")
     
         print ("all")
-
+    '''    
 def main() -> None:
     """The Tkinter entry point of the program; enters mainloop."""
     #root = tk.Tk()

@@ -5,6 +5,7 @@ import tkinter as tk
 from pathlib import Path
 from tkinter.messagebox import showinfo
 from typing import TYPE_CHECKING
+from calibrationFrame import calibrationFrame
 
 #from MainFrame import MainWindow
 from AllFrame import All_Frame
@@ -18,13 +19,31 @@ class myMenuBar(tk.Menu):
         tk.Menu.__init__(self, parent,*args, **kwargs)
         # expecting parent to be the toplevel parent of the main frame
         self.parent = parent
+        #parent.spec.close()
+        #parent.ser.close()
         menubar= tk.Menu(parent, tearoff=False)
         #menubar.add_command(label="Default", command=lambda: parent.show_frame(MainWindow))
-        menubar.add_command(label="Display All", command=self.displayAll)
+        menubar.add_command(label="Calibration", command=self.Calibration)
+        menubar.add_command(label="Multiplexed Mode", command=self.displayAll)
         menubar.add_command(label="Help", command=self.help)
         menubar.add_command(label="About", command=self.about)
 
         self.menubar = menubar
+        
+    def Calibration(self):
+        self.newWindow=tk.Toplevel()
+        self.newWindow.title("Calibration")
+        self.newWindow.frames = {}
+        #self.parent.frame.destroy()
+        container = tk.Frame(self.newWindow)
+        container.pack(side="top", fill="both", expand=True)
+        container.grid_rowconfigure(0, weight=1)
+        container.grid_columnconfigure(0, weight=1)
+        frame = calibrationFrame(container, self.newWindow)
+        self.parent.frames[All_Frame] = frame
+        frame.grid(row=0, column=0, sticky="nsew")
+        #All_Frame(self.parent)
+        print ("all")
 
     def displayAll(self):
         self.newWindow=tk.Toplevel()

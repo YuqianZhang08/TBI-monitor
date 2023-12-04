@@ -13,7 +13,7 @@ def multivariate_fit(y,X,light):
     model = sm.GLM(y,X)    
     if light==405:
         R=[[1, 1, 0, 0,0,0],[0, 0, 1, 1,0,0],[0, 0, 0,0,1,1]]
-        q=[1,1,1]           
+        q=[1,1,1]        
         result = model.fit_constrained((R, q))
         concen=result.params
     if light==450:
@@ -131,16 +131,17 @@ def MVRpredict(signal,light):
         
 
 if __name__=='__main__':
-    excel_path = "3overlap.xlsx"
-    data = pd.read_excel(excel_path)
+    excel_path = "MVR data.xlsx"
+    data = pd.read_excel(excel_path,sheet_name="488")
+    data.dropna()
     dataArr=np.array(data)
-    st_wavelength=100
-    y=dataArr[1:,6:]
-    X=dataArr[1:,0:6]
-    yall=datacrop(st_wavelength,y)
-    X=datacrop(st_wavelength,X)
+    #st_wavelength=100
+    y=dataArr[1:751,4:]
+    X=dataArr[1:751,0:4]
+    #yall=datacrop(st_wavelength,y)
+    #X=datacrop(st_wavelength,X)
     X = np.array(X, dtype=float)
-    yall= np.array(yall, dtype=float)
+    yall= np.array(y, dtype=float)
     num_column=len(X[0])
     
     '''
@@ -154,21 +155,20 @@ if __name__=='__main__':
     concenlist=[]
     temp=[]
     sodium=[]
-    calcium=[]
+
 
     for i in range (0,len(yall[0])):     #len(yall[0])
        y=yall[:,i]
-       concen=multivariate_fit(y,X)    #GLM fit
+       concen=multivariate_fit(y,X,450)    #GLM fit
        #concen=ridgefit(X,y)
        #concen=sckl_mr(X,y)           #Sciklearn fit
        concenlist.append(concen)
-       calcium.append(0.25*concen[0]+1.5*concen[1])
-       temp.append(36*concen[2]+40*concen[3])
-       sodium.append(concen[4]*40+concen[5]*200)
+       temp.append(36*concen[0]+40*concen[1])
+       sodium.append(concen[2]*40+concen[3]*200)
        print(i)
        #oxy2.append(concen[2]*0.8+7.8*concen[3])
     #concen=multivariate_fit(y,X)
     #print(concen)
-    output=[temp,sodium,calcium,concenlist]
+    output=[temp,sodium,concenlist]
     df=pd.DataFrame(output)
-    df.to_csv("outputglm78.csv")
+    df.to_csv("output488.csv")
